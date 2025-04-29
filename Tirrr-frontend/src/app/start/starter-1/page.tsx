@@ -19,7 +19,7 @@ export default function StepOne() {
       </header>
       <section className="mt-6 flex justify-center">
         <Image
-          src="/images/start/starter1.png"
+          src="/start-1.png"
           alt="Onboarding Step 1"
           width={300}
           height={300}

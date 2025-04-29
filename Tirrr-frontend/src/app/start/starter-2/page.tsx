@@ -13,7 +13,7 @@ export default function StepTwo() {
       </header>
       <section className="mt-6 flex justify-center">
         <Image
-          src="/images/start/starter2.png"
+          src="/start-2.png"
           alt="Onboarding Step 2"
           width={300}
           height={300}

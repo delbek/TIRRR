@@ -22,7 +22,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
       {/* Logo (centered) */}
       <Image
-        src="/images/start/wait.png"
+        src="/wait.png"
         alt="TIRRR Logo"
         width={70}
         height={24}

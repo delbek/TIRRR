@@ -9,7 +9,7 @@ export default function WaitPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-white">
       <Image
-        src="/images/start/wait.png"
+        src="/wait.png"
         alt="Tırrr Logo"
         width={250}
         height={250}

@@ -13,7 +13,7 @@ export default function StepThree() {
       </header>
       <section className="mt-6 flex justify-center">
         <Image
-          src="/images/start/starter3.png"
+          src="/start-3.png"
           alt="Onboarding Step 3"
           width={300}
           height={300}
@@ -41,10 +41,7 @@ export default function StepThree() {
           <span className="inline-block h-2 w-2 rounded-full bg-gray-300"></span>
           <span className="inline-block h-2 w-4 rounded-full bg-[#0B1C39]"></span>
         </div>
-        <Link
-          href="/login"
-          className="text-base font-semibold text-[#0B1C39]"
-        >
+        <Link href="/login" className="text-base font-semibold text-[#0B1C39]">
           Sonraki
         </Link>
       </footer>
