@@ -8,13 +8,10 @@ export default function ForgotPasswordPage() {
   const [phone, setPhone] = useState('');
 
   return (
-    <div className="min-h-screen px-6 pt-10 pb-6 flex flex-col justify-between text-center">
-      {/* Heading */}
+    <div className="px-6 pt-10 pb-6">
       <h1 className="text-4xl font-extrabold text-left mb-8">Şifrenizi Sıfırlayın</h1>
 
-      {/* Form */}
       <div className="flex flex-col gap-4">
-        {/* Phone input */}
         <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 border">
           <span className="mr-2 text-gray-500">📱</span>
           <input
@@ -26,14 +23,14 @@ export default function ForgotPasswordPage() {
           />
         </div>
 
-        {/* Send Reset Code Button */}
-        <button className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg">
+        <button className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg w-full">
           Şifre Sıfırlama Kodu Gönder
         </button>
       </div>
 
-      {/* Back to Login */}
-      <div className="mt-6">
+      <div className="my-6 text-center text-sm text-gray-500">- ya da -</div>
+
+      <div className="text-center">
         <Link href="/login" className="text-[#0B1C39] font-semibold underline">
           Giriş Yap
         </Link>

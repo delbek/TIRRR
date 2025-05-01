@@ -23,7 +23,7 @@ export default function StepTwo() {
       <section className="px-2 text-center">
         <h1 className="mt-6 text-xl font-bold text-black">İtibar Oluşturun</h1>
         <p className="mt-3 text-base text-gray-500">
-          Yaptığınız her bir taşıma aldığınız puanla sayesinde bir sonraki taşımanızı kolaylaştırır.
+          Yaptığınız her bir taşıma aldığınız puanlar sayesinde bir sonraki taşımanızı kolaylaştırır.
         </p>
       </section>
       <footer className="mt-6 flex items-center justify-between px-4">

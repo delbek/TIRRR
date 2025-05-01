@@ -24,8 +24,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <Image
         src="/wait.png"
         alt="TIRRR Logo"
-        width={70}
-        height={24}
+        width={100}
+        height={36}
         className="object-contain"
       />
 

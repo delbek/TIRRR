@@ -22,11 +22,11 @@ export default function StepThree() {
       </section>
       <section className="px-2 text-center">
         <h1 className="mt-6 text-xl font-bold text-black">
-          Anlaşmaları Sizi Bulsun
+          Anlaşmalar Sizi Bulsun
         </h1>
         <p className="mt-3 text-base text-gray-500">
-          Yapay zeka modelimiz her yaptığınız taşımadan sonra sizi öğrenir ve
-          size uygun olan taşımaları önünüze otomatik olarak getirir.
+          Yapay zeka modelimiz sizi tanır ve
+          size uygun olan taşımaları otomatik olarak gösterir.
         </p>
       </section>
       <footer className="mt-6 flex items-center justify-between px-4">

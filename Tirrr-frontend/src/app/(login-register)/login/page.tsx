@@ -1,21 +1,16 @@
-// app/login/login/page.tsx
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen px-6 pt-10 pb-6 flex flex-col justify-between text-center">
-      {/* Heading */}
+    <div className="px-6 pt-10 pb-6">
       <h1 className="text-4xl font-extrabold text-left mb-8">Hoş Geldiniz!</h1>
 
-      {/* Form */}
       <div className="flex flex-col gap-4">
-        {/* Phone input */}
         <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 border">
           <span className="mr-2 text-gray-500">📱</span>
           <input
@@ -25,7 +20,6 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Password input */}
         <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 border">
           <span className="mr-2 text-gray-500">🔒</span>
           <input
@@ -41,47 +35,20 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Forgot Password link */}
         <div className="text-right">
           <Link href="/forgetpassword" className="text-sm text-[#0B1C39] font-medium">
             Şifrenizi mi Unuttunuz?
           </Link>
         </div>
 
-        {/* Login Button */}
         <button className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg w-full">
           Giriş Yap
         </button>
       </div>
 
-      {/* OR separator */}
-      <div className="my-6 text-sm text-gray-500">- ya da -</div>
+      <div className="my-6 text-center text-sm text-gray-500">- ya da -</div>
 
-      {/* Social Login Buttons */}
-      <div className="flex justify-center gap-6">
-        {[
-          { src: '/images/log-in/Google.png', alt: 'Google', adjust: 'scale-[1.6]' },
-          { src: '/images/log-in/Apple.png', alt: 'Apple', adjust: 'scale-[1.5]' },
-          { src: '/images/log-in/Facebook.png', alt: 'Facebook', adjust: 'scale-[1.5]' },
-        ].map((provider) => (
-          <button
-            key={provider.alt}
-            className="w-14 h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-200"
-          >
-            <div className={`relative w-10 h-10 ${provider.adjust}`}>
-              <Image
-                src={provider.src}
-                alt={provider.alt}
-                fill
-                className="object-contain"
-              />
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Register Redirect */}
-      <div className="mt-6">
+      <div className="text-center">
         <Link href="/register" className="text-[#0B1C39] font-semibold underline">
           Hesap Oluştur
         </Link>

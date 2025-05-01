@@ -56,13 +56,13 @@ export default function IlanDetail() {
             <span>{ilan.weight}</span>
           </div>
           <div className="row">
-            <span>Tarih</span>
+            <span>Kalkış Tarih Aralığı</span>
             <span>{ilan.date}</span>
           </div>
           <div className="row">
             <span>Kalkış Noktası</span>
             <span>{ilan.from}</span>
-          </div>
+          </div>  
           <div className="row">
             <span>Varış Noktası</span>
             <span>{ilan.to}</span>
