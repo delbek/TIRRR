@@ -11,12 +11,12 @@ interface DrawerProps {
 export default function Drawer({ isOpen, onClose }: DrawerProps) {
   const menuItems = [
     { label: "Anasayfa", href: "/" },
-    { label: "İlan Ara", href: "/ilan-ara" },
-    { label: "İlan Ver", href: "/ilan-ver" },
-    { label: "Mesajlar", href: "/mesajlar" },
-    { label: "Bildirimler", href: "/bildirimler" },
-    { label: "Profil", href: "/profil" },
-    { label: "Ayarlar", href: "/ayarlar" },
+    { label: "İlan Ara", href: "/search" },
+    { label: "İlan Ver", href: "/share-post" },
+    { label: "Mesajlar", href: "/messages" },
+    { label: "Bildirimler", href: "/notifications" },
+    { label: "Profil", href: "/profile" },
+    { label: "Ayarlar", href: "/settings" },
   ];
 
   return (

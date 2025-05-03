@@ -39,57 +39,72 @@ export default function ChatDetail() {
   ]);
 
   useEffect(() => {
-    if (scrollRef.current)
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [messages]);
 
   return (
-    <div className="page">
+    <>
       <Head>
         <title>Chat with {chatWith.name} - TIRRR</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="chat-header">
-        <button className="back-btn" onClick={() => router.back()}>
-          &larr;
-        </button>
-        <Image
-          src={chatWith.avatar}
-          alt={chatWith.name}
-          width={40}
-          height={40}
-          className="avatar"
-        />
-        <span className="chat-name">{chatWith.name}</span>
-        <button className="menu-btn">&#x22EE;</button>
+      <div className="page">
+        <div className="chat-header">
+          <button className="back-btn" onClick={() => router.back()}>
+            &larr;
+          </button>
+          <Image
+            src={chatWith.avatar}
+            alt={chatWith.name}
+            width={40}
+            height={40}
+            className="avatar"
+          />
+          <span className="chat-name">{chatWith.name}</span>
+          <button className="menu-btn">&#x22EE;</button>
+        </div>
+
+        <div className="messages" ref={scrollRef}>
+          {messages.map((msg) => (
+            <div key={msg.id} className={`bubble ${msg.type}`}>
+              <p>{msg.text}</p>
+              <span className="time">{msg.time}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="input-area">
+          <input type="text" placeholder="Write a message..." />
+          <button className="icon-btn camera" aria-label="Take photo">
+            📷
+          </button>
+          <button className="send-btn" aria-label="Send message">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M2 21L23 12L2 3L2 10L17 12L2 14L2 21Z" fill="white" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div className="messages" ref={scrollRef}>
-        {messages.map((msg) => (
-          <div key={msg.id} className={`bubble ${msg.type}`}>
-            <p>{msg.text}</p>
-            <span className="time">{msg.time}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="input-area">
-        <button className="icon-btn emoji">😊</button>
-        <input type="text" placeholder="Write a message..." />
-        <button className="icon-btn attach">📎</button>
-        <button className="send-btn" aria-label="Send message">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M2 21L23 12L2 3L2 10L17 12L2 14L2 21Z" fill="white" />
-          </svg>
-        </button>
-      </div>
+      {/* Global reset to remove default margins */}
+      <style jsx global>{`
+        html,
+        body,
+        #__next {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+        }
+      `}</style>
 
       <style jsx>{`
         .page {
@@ -128,10 +143,11 @@ export default function ChatDetail() {
         }
         .messages {
           flex: 1;
-          overflow-y: auto;
-          padding: 16px;
           display: flex;
           flex-direction: column;
+          justify-content: flex-end;
+          overflow-y: auto;
+          padding: 16px 16px 0;
           gap: 12px;
         }
         .bubble {
@@ -174,6 +190,8 @@ export default function ChatDetail() {
           background: white;
           gap: 8px;
           box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1);
+          position: sticky;
+          bottom: 0;
         }
         .input-area input {
           flex: 1;
@@ -206,6 +224,6 @@ export default function ChatDetail() {
           background: #162057;
         }
       `}</style>
-    </div>
+    </>
   );
 }

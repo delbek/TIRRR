@@ -4,6 +4,9 @@ import Head from 'next/head';
 import Image from 'next/image';
 
 export default function IlanAra() {
+  // Bugünün tarihini YYYY-MM-DD formatında al
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <div className="page">
       <Head>
@@ -23,11 +26,11 @@ export default function IlanAra() {
           </label>
           <label>
             Başlangıç Tarihi
-            <input type="date" placeholder="Bir tarih seçin" />
+            <input type="date" defaultValue={today} placeholder="Bir tarih seçin" />
           </label>
           <label>
             Bitiş Tarihi
-            <input type="date" placeholder="Bir tarih seçin" />
+            <input type="date" defaultValue={today} placeholder="Bir tarih seçin" />
           </label>
           <label>
             Maksimum Yük Ağırlığı

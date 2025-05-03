@@ -53,6 +53,14 @@ export default function Profile() {
               Adresiniz
               <input type="text" defaultValue="Levent/İstanbul" />
             </label>
+            <label>
+              İl
+              <input type="text" placeholder="İl girin" />
+            </label>
+            <label>
+              İlçe
+              <input type="text" placeholder="İlçe girin" />
+            </label>
           </section>
 
           <hr />
@@ -79,28 +87,28 @@ export default function Profile() {
             <h2>Araç Bilgileriniz</h2>
             <label>
               Araç Tipi
-              <select defaultValue="Panelvan" className="tall-select">
+              <select defaultValue="Panelvan" className="select">
                 <option value="Panelvan">Panelvan</option>
                 <option value="Kamyonet">Kamyonet</option>
               </select>
             </label>
             <label>
               Dorse Tipi
-              <select defaultValue="Frigo" className="tall-select">
+              <select defaultValue="Frigo" className="select">
                 <option value="Frigo">Frigo</option>
                 <option value="Kapalı">Kapalı</option>
               </select>
             </label>
             <label>
               Zemin Tipi
-              <select defaultValue="Tahta Taban" className="tall-select">
+              <select defaultValue="Tahta Taban" className="select">
                 <option value="Tahta Taban">Tahta Taban</option>
                 <option value="Sac Taban">Sac Taban</option>
               </select>
             </label>
             <label>
               Maksimum Yük Miktarı
-              <select defaultValue="15" className="tall-select">
+              <select defaultValue="15" className="select">
                 {Array.from({ length: 16 }, (_, i) => 15 + i).map((n) => (
                   <option key={n} value={n}>{n} ton</option>
                 ))}
@@ -160,21 +168,28 @@ export default function Profile() {
           width: 100%;
         }
         input {
+          box-sizing: border-box;
+          width: 100%;
+          height: 48px;
           padding: 12px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
           font-size: 16px;
-          margin-top: 8px;
-          width: 100%;
-        }
-        /* Double the previous height again: 48px vertical padding */
-        .tall-select {
-          padding: 48px 12px;
-          font-size: 20px;
           border: 1px solid #ccc;
           border-radius: 8px;
           margin-top: 8px;
+          appearance: none;
+        }
+        .select {
+          box-sizing: border-box;
           width: 100%;
+          height: 48px;
+          padding: 12px;
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          margin-top: 8px;
+          background: white;
+          appearance: auto;
+          -webkit-appearance: menulist;
         }
         .change-pass {
           font-size: 14px;

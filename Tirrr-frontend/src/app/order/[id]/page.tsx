@@ -13,7 +13,8 @@ export default function IlanDetail() {
     content: "Mobilya",
     volume: "12 bin m³",
     weight: "20 ton",
-    date: "24.04.25",
+    startDate: "24 Mayıs",
+    endDate: "1 Haziran",
     from: "Konya",
     to: "İstanbul",
     price: "15000 + KDV",
@@ -55,8 +56,10 @@ export default function IlanDetail() {
             <span>{ilan.weight}</span>
           </div>
           <div className="row">
-            <span>Tarih</span>
-            <span>{ilan.date}</span>
+            <span>Kalkış Tarihi Aralığı</span>
+            <span>
+              {ilan.startDate} - {ilan.endDate}
+            </span>
           </div>
           <div className="row">
             <span>Kalkış Noktası</span>
@@ -72,16 +75,14 @@ export default function IlanDetail() {
           </div>
         </section>
 
-        <div className="button-group">
-          <button className="btn">Mesaj At</button>
-          <button className="btn">Durumu Güncelle</button>
-        </div>
+        <button className="btn">Mesaj At</button>
       </main>
 
       <style jsx>{`
         .page {
           padding: 16px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
           background: #f8f8f8;
           min-height: 100vh;
           display: flex;
@@ -121,13 +122,8 @@ export default function IlanDetail() {
           border-top: 1px solid #ccc;
           margin: 0 0 24px;
         }
-        .button-group {
-          display: flex;
-          gap: 16px;
-          margin-top: auto;
-        }
         .btn {
-          flex: 1;
+          width: 100%;
           padding: 16px;
           background: #1a237e;
           color: white;
@@ -135,6 +131,7 @@ export default function IlanDetail() {
           border: none;
           border-radius: 8px;
           cursor: pointer;
+          margin-top: auto;
         }
       `}</style>
     </div>
