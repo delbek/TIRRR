@@ -1,34 +1,97 @@
-"use client";
+// app/post/[id]/page.tsx
+'use client';
 
-import { useParams } from "next/navigation";
-import Head from "next/head";
+import { useParams, useRouter } from 'next/navigation';
+import Head from 'next/head';
+import { useState, useEffect } from 'react';
+
+interface Ilan {
+  id: string;
+  owner: string;
+  historyCount: number;
+  content: string;
+  volume: string;
+  weight: string;
+  startDate: string;
+  endDate: string;
+  from: string;
+  to: string;
+  price: string;
+}
 
 export default function IlanDetail() {
   const { id } = useParams();
+  const router = useRouter();
+  const [ilan, setIlan] = useState<Ilan | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // TODO: Replace with real data fetching
-  const ilan = {
-    owner: "Mustafa Hasan",
-    historyCount: 0,
-    content: "Mobilya",
-    volume: "12 bin m³",
-    weight: "20 ton",
-    startDate: "24 Mayıs",
-    endDate: "1 Haziran",
-    from: "Konya",
-    to: "İstanbul",
-    price: "15000 + KDV",
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      // No token → send to login, preserving this page
+      router.replace(`/login?redirect=/post/${id}`);
+      return;
+    }
+
+    if (!id) return;
+
+    setLoading(true);
+    fetch(`/api/post/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(async (res) => {
+        if (res.status === 401) {
+          // Unauthorized → redirect to login
+          router.replace(`/login?redirect=/post/${id}`);
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<Ilan>;
+      })
+      .then((data) => {
+        if (data) setIlan(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError('Veri yüklenirken hata oluştu.');
+      })
+      .finally(() => setLoading(false));
+  }, [id, router]);
+
+  if (loading) {
+    return (
+      <div className="page">
+        <p>Yükleniyor…</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="page">
+        <p className="error">{error}</p>
+      </div>
+    );
+  }
+  if (!ilan) {
+    return (
+      <div className="page">
+        <p className="error">İlan bulunamadı.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page">
       <Head>
-        <title>İlan #{id} - TIRRR</title>
+        <title>İlan #{ilan.id} - TIRRR</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <main>
-        <h1>İlan #{id}</h1>
+        <h1>İlan #{ilan.id}</h1>
 
         <section className="section">
           <h2>İlan Sahibi Bilgileri</h2>
@@ -132,6 +195,10 @@ export default function IlanDetail() {
           border-radius: 8px;
           cursor: pointer;
           margin-top: auto;
+        }
+        .error {
+          text-align: center;
+          color: #b00020;
         }
       `}</style>
     </div>

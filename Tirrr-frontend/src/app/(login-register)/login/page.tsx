@@ -1,10 +1,41 @@
+// app/login/page.tsx
 'use client';
 
 import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleLogin = async () => {
+    try {
+      const res = await fetch('/api/auth/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.detail || 'Giriş başarısız');
+        return;
+      }
+
+      // success: save token and redirect
+      localStorage.setItem('authToken', data.token);
+      const next = searchParams.get('redirect') || '/';
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      alert('Sunucuya bağlanırken hata oluştu.');
+    }
+  };
 
   return (
     <div className="px-6 pt-10 pb-6">
@@ -17,6 +48,8 @@ export default function LoginPage() {
             type="text"
             placeholder="Telefon Numaranız"
             className="bg-transparent flex-1 outline-none text-base"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
           />
         </div>
 
@@ -26,8 +59,11 @@ export default function LoginPage() {
             type={showPassword ? 'text' : 'password'}
             placeholder="Şifreniz"
             className="bg-transparent flex-1 outline-none text-base"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button
+            type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="text-gray-500 ml-2"
           >
@@ -41,7 +77,10 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <button className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg w-full">
+        <button
+          onClick={handleLogin}
+          className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg w-full"
+        >
           Giriş Yap
         </button>
       </div>

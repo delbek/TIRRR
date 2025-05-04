@@ -1,97 +1,207 @@
-// pages/ilan-ver.js
 "use client";
 
-import Head from 'next/head';
+import React, { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import Head from "next/head";
 
-export default function IlanVer() {
+export default function IlanVerPage() {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [weight, setWeight] = useState("");
+  const [volume, setVolume] = useState("");
+  const [content, setContent] = useState("");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
+  const [price, setPrice] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setError(null);
+    setSuccess(null);
+
+    if (
+      !from ||
+      !to ||
+      !weight ||
+      !volume ||
+      !content ||
+      !dateStart ||
+      !dateEnd ||
+      !price
+    ) {
+      setError("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.replace("/login?redirect=/ilan-ver");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          from,
+          to,
+          weight,
+          volume,
+          content,
+          dateStart,
+          dateEnd,
+          price,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || `Hata ${res.status}`);
+      }
+
+      setSuccess("İlanınız başarıyla yayınlandı!");
+      setFrom("");
+      setTo("");
+      setWeight("");
+      setVolume("");
+      setContent("");
+      setDateStart("");
+      setDateEnd("");
+      setPrice("");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Yayınlama sırasında hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="page">
+    <div className="page px-4 py-6 bg-gray-50 min-h-screen">
       <Head>
         <title>İlan Ver - TIRRR</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <main>
-        <h1>İlan Ver</h1>
-        <form className="form">
-          <label>
-            Kalkış Noktası
-            <input type="text" placeholder="Bir konum belirleyin" />
+
+      <main className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
+        <h1 className="text-2xl font-semibold mb-4">İlan Ver</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          <label className="flex flex-col">
+            <span>Kalkış Noktası</span>
+            <input
+              type="text"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              disabled={loading}
+              className="mt-1 p-2 border rounded"
+              placeholder="Bir konum belirleyin"
+            />
           </label>
-          <label>
-            Varış Noktası
-            <input type="text" placeholder="Bir konum belirleyin" />
+
+          <label className="flex flex-col">
+            <span>Varış Noktası</span>
+            <input
+              type="text"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              disabled={loading}
+              className="mt-1 p-2 border rounded"
+              placeholder="Bir konum belirleyin"
+            />
           </label>
-          <label>
-            Ağırlık
-            <input type="text" placeholder="Bir fiyat aralığı seçin" />
+
+          <label className="flex flex-col">
+            <span>Ağırlık</span>
+            <input
+              type="text"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              disabled={loading}
+              className="mt-1 p-2 border rounded"
+              placeholder="Bir ağırlık girin"
+            />
           </label>
-          <label>
-            Hacim
-            <input type="text" placeholder="Bir tarih seçin" />
+
+          <label className="flex flex-col">
+            <span>Hacim</span>
+            <input
+              type="text"
+              value={volume}
+              onChange={(e) => setVolume(e.target.value)}
+              disabled={loading}
+              className="mt-1 p-2 border rounded"
+              placeholder="Bir hacim girin"
+            />
           </label>
-          <label>
-            İçerik
-            <input type="text" placeholder="Bir tarih seçin" />
+
+          <label className="flex flex-col">
+            <span>İçerik</span>
+            <input
+              type="text"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              disabled={loading}
+              className="mt-1 p-2 border rounded"
+              placeholder="İçeriği girin"
+            />
           </label>
-          <label>
-            Kalkış Tarih Aralığı
-            <input type="date" placeholder="Bir tarih seçin" />
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex flex-col">
+              <span>Başlangıç Tarihi</span>
+              <input
+                type="date"
+                value={dateStart}
+                onChange={(e) => setDateStart(e.target.value)}
+                disabled={loading}
+                className="mt-1 p-2 border rounded"
+              />
+            </label>
+            <label className="flex flex-col">
+              <span>Bitiş Tarihi</span>
+              <input
+                type="date"
+                value={dateEnd}
+                onChange={(e) => setDateEnd(e.target.value)}
+                disabled={loading}
+                className="mt-1 p-2 border rounded"
+              />
+            </label>
+          </div>
+
+          <label className="flex flex-col">
+            <span>Ücret (KDV Hariç)</span>
+            <input
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              disabled={loading}
+              className="mt-1 p-2 border rounded"
+              placeholder="Fiyatı girin"
+            />
           </label>
-          <label>
-            Ücret (KDV Hariç)
-            <input type="text" placeholder="Bir tarih seçin" />
-          </label>
-          <button type="submit" className="submit-btn">Yayınla</button>
+
+          {error && <p className="text-red-600">{error}</p>}
+          {success && <p className="text-green-600">{success}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-4 bg-blue-600 text-white py-3 rounded disabled:opacity-50"
+          >
+            {loading ? "Yayınlanıyor…" : "Yayınla"}
+          </button>
         </form>
       </main>
-
-      <style jsx>{`
-        .page {
-          padding: 16px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-            Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-          background: #f8f8f8;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-        main {
-          flex: 1;
-        }
-        h1 {
-          font-size: 24px;
-          font-weight: 600;
-          margin-bottom: 24px;
-        }
-        .form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        label {
-          display: flex;
-          flex-direction: column;
-          font-size: 16px;
-        }
-        input {
-          padding: 12px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          font-size: 16px;
-          margin-top: 8px;
-        }
-        .submit-btn {
-          margin-top: 24px;
-          padding: 16px;
-          background: #1a237e;
-          color: white;
-          font-size: 18px;
-          border: none;
-          border-radius: 8px;
-          width: 100%;
-          cursor: pointer;
-        }
-      `}</style>
     </div>
   );
 }

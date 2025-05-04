@@ -1,9 +1,41 @@
 "use client";
 
-import Head from 'next/head';
-import Image from 'next/image';
+import { useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
 
 export default function Profile() {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData.entries());
+
+    // Retrieve your auth token however you normally do
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch("/api/profile/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        alert("Profiliniz başarıyla güncellendi.");
+      } else {
+        const error = await res.json();
+        console.error("Güncelleme hatası:", error);
+        alert("Profil güncellenirken bir hata oluştu.");
+      }
+    } catch (err) {
+      console.error("Fetch hatası:", err);
+      alert("Sunucuya bağlanırken bir hata oluştu.");
+    }
+  };
+
   return (
     <div className="page">
       <Head>
@@ -23,18 +55,25 @@ export default function Profile() {
           <h1>Profil</h1>
         </div>
 
-        <form className="form">
+        <form className="form" onSubmit={handleSubmit}>
           <section>
             <h2>Hesap Bilgileriniz</h2>
             <label>
               Telefon Numaranız
-              <input type="text" defaultValue="05316882362" />
+              <input name="phone" type="text" defaultValue="05316882362" />
             </label>
             <label>
               Şifreniz
-              <input type="password" defaultValue="**********" />
+              <input
+                name="password"
+                type="password"
+                defaultValue=""
+                placeholder="Yeni şifre girin"
+              />
             </label>
-            <a href="#" className="change-pass">Şifreyi Değiştir</a>
+            <a href="#" className="change-pass">
+              Şifreyi Değiştir
+            </a>
           </section>
 
           <hr />
@@ -43,23 +82,31 @@ export default function Profile() {
             <h2>İş Bilgileriniz</h2>
             <label>
               Plakanız
-              <input type="text" defaultValue="42TC432" />
+              <input name="plate" type="text" defaultValue="42TC432" />
             </label>
             <label>
               Vergi Numaranız
-              <input type="text" defaultValue="4534895739842" />
+              <input
+                name="taxNumber"
+                type="text"
+                defaultValue="4534895739842"
+              />
             </label>
             <label>
               Adresiniz
-              <input type="text" defaultValue="Levent/İstanbul" />
+              <input
+                name="address"
+                type="text"
+                defaultValue="Levent/İstanbul"
+              />
             </label>
             <label>
               İl
-              <input type="text" placeholder="İl girin" />
+              <input name="city" type="text" placeholder="İl girin" />
             </label>
             <label>
               İlçe
-              <input type="text" placeholder="İlçe girin" />
+              <input name="district" type="text" placeholder="İlçe girin" />
             </label>
           </section>
 
@@ -69,15 +116,15 @@ export default function Profile() {
             <h2>Kişisel Bilgileriniz</h2>
             <label>
               İsminiz
-              <input type="text" defaultValue="Sude" />
+              <input name="firstName" type="text" defaultValue="Sude" />
             </label>
             <label>
               Soyisminiz
-              <input type="text" defaultValue="Sır" />
+              <input name="lastName" type="text" defaultValue="Sır" />
             </label>
             <label>
               Doğum Tarihiniz
-              <input type="date" defaultValue="2005-10-23" />
+              <input name="birthDate" type="date" defaultValue="2005-10-23" />
             </label>
           </section>
 
@@ -87,44 +134,60 @@ export default function Profile() {
             <h2>Araç Bilgileriniz</h2>
             <label>
               Araç Tipi
-              <select defaultValue="Panelvan" className="select">
+              <select
+                name="vehicleType"
+                defaultValue="Panelvan"
+                className="select"
+              >
                 <option value="Panelvan">Panelvan</option>
                 <option value="Kamyonet">Kamyonet</option>
               </select>
             </label>
             <label>
               Dorse Tipi
-              <select defaultValue="Frigo" className="select">
+              <select
+                name="trailerType"
+                defaultValue="Frigo"
+                className="select"
+              >
                 <option value="Frigo">Frigo</option>
                 <option value="Kapalı">Kapalı</option>
               </select>
             </label>
             <label>
               Zemin Tipi
-              <select defaultValue="Tahta Taban" className="select">
+              <select
+                name="floorType"
+                defaultValue="Tahta Taban"
+                className="select"
+              >
                 <option value="Tahta Taban">Tahta Taban</option>
                 <option value="Sac Taban">Sac Taban</option>
               </select>
             </label>
             <label>
               Maksimum Yük Miktarı
-              <select defaultValue="15" className="select">
+              <select name="maxLoad" defaultValue="15" className="select">
                 {Array.from({ length: 16 }, (_, i) => 15 + i).map((n) => (
-                  <option key={n} value={n}>{n} ton</option>
+                  <option key={n} value={n}>
+                    {n} ton
+                  </option>
                 ))}
               </select>
             </label>
           </section>
 
-          <button type="submit" className="save-btn">Kaydet</button>
+          <button type="submit" className="save-btn">
+            Kaydet
+          </button>
         </form>
       </main>
 
       <style jsx>{`
         .page {
           padding: 16px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-            Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
           background: #f8f8f8;
           min-height: 100vh;
           display: flex;
@@ -167,17 +230,7 @@ export default function Profile() {
           margin-bottom: 12px;
           width: 100%;
         }
-        input {
-          box-sizing: border-box;
-          width: 100%;
-          height: 48px;
-          padding: 12px;
-          font-size: 16px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          margin-top: 8px;
-          appearance: none;
-        }
+        input,
         .select {
           box-sizing: border-box;
           width: 100%;
@@ -187,9 +240,7 @@ export default function Profile() {
           border: 1px solid #ccc;
           border-radius: 8px;
           margin-top: 8px;
-          background: white;
-          appearance: auto;
-          -webkit-appearance: menulist;
+          appearance: none;
         }
         .change-pass {
           font-size: 14px;
