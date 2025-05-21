@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
   MoonIcon,
   BellIcon,
   LockClosedIcon,
   InformationCircleIcon,
   ChevronRightIcon,
-} from "@heroicons/react/outline";
+} from '@heroicons/react/outline';
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
       className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${
-        on ? "bg-blue-600" : "bg-gray-200"
+        on ? 'bg-blue-600' : 'bg-gray-200'
       }`}
     >
       <span
         className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transform transition-transform ${
-          on ? "translate-x-5" : ""
+          on ? 'translate-x-5' : ''
         }`}
       />
     </div>
@@ -31,6 +31,32 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
 export default function SettingsPage() {
   const [darkMode, setDarkMode] = useState(false);
   const [matches, setMatches] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleMatchToggle = async () => {
+    setError('');
+    const newMatchState = !matches;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/settings/match', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token || '',
+        },
+        body: JSON.stringify({ match: newMatchState }),
+      });
+      const data = await res.json();
+      if (res.ok && data.status) {
+        setMatches(newMatchState);
+      } else {
+        setError('Eşleşme kapatılamadı');
+      }
+    } catch (err) {
+      console.error('Match toggle error:', err);
+      setError('Sunucuya bağlanılamadı');
+    }
+  };
 
   return (
     <div className="p-4">
@@ -38,7 +64,6 @@ export default function SettingsPage() {
 
       {/* profile */}
       <div className="mt-6 flex items-center space-x-4 px-4">
-        {/* put adina-avatar.jpg into /public */}
         <Image
           src="/adina-avatar.jpg"
           alt="Adina Nurrahma"
@@ -49,9 +74,9 @@ export default function SettingsPage() {
         <span className="text-lg font-medium">Adina Nurrahma</span>
       </div>
 
-      {/* the card */}
+      {/* settings card */}
       <div className="mt-8 bg-white rounded-lg overflow-hidden divide-y divide-gray-200">
-        {/* Dark Mode */}
+        {/* Dark Mode (UI only) */}
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-3">
             <MoonIcon className="h-6 w-6 text-gray-600" />
@@ -66,8 +91,9 @@ export default function SettingsPage() {
             <BellIcon className="h-6 w-6 text-gray-600" />
             <span className="text-gray-800">Eşleşmeler</span>
           </div>
-          <Toggle on={matches} onClick={() => setMatches(!matches)} />
+          <Toggle on={matches} onClick={handleMatchToggle} />
         </div>
+        {error && <p className="text-red-500 px-4 py-2">{error}</p>}
 
         {/* Reset password */}
         <Link

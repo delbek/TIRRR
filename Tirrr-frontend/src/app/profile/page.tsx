@@ -1,9 +1,108 @@
-"use client";
+'use client';
 
+import { useState, useEffect, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Image from 'next/image';
 
-export default function Profile() {
+interface ProfileData {
+  phoneNumber: string;
+  licensePlate: string;
+  taxNumber: string;
+  address: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  vehicleType: string;
+  trailerType: string;
+  floorTypes: string;
+  maxLoadCapacity: string;
+}
+
+export default function ProfilePage() {
+  const router = useRouter();
+  const [profile, setProfile] = useState<ProfileData>({
+    phoneNumber: '',
+    licensePlate: '',
+    taxNumber: '',
+    address: '',
+    firstName: '',
+    lastName: '',
+    birthDate: '',
+    vehicleType: 'Panelvan',
+    trailerType: 'Frigo',
+    floorTypes: 'Tahta Taban',
+    maxLoadCapacity: '1'
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setError('');
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/profile', {
+          headers: { Authorization: token || '' }
+        });
+        const data: ProfileData = await res.json();
+        if (res.ok) {
+          setProfile(data);
+        } else {
+          setError('Profil yüklenirken bir hata oluştu.');
+        }
+      } catch (err) {
+        console.error('Fetch profile error:', err);
+        setError('Sunucuya bağlanılamadı.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSave = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoadingSave(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/profile/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(profile)
+      });
+      const data = await res.json();
+      if (res.ok && data.status) {
+        setSuccess('Kaydetme başarılı');
+        setShowSuccess(true);
+      } else {
+        setError('Kaydetme başarısız oldu.');
+      }
+    } catch (err) {
+      console.error('Update profile error:', err);
+      setError('Bir hata oluştu.');
+    } finally {
+      setLoadingSave(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="px-6 pt-10">Yükleniyor...</div>;
+  }
+
+  if (error) {
+    return <div className="px-6 pt-10 text-red-500">{error}</div>;
+  }
+
+  if (!profile) return null;
+
   return (
     <div className="page">
       <Head>
@@ -11,8 +110,8 @@ export default function Profile() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main>
-        <div className="profile-header">
+      <main className="px-6 py-8 bg-gray-50 min-h-screen flex flex-col">
+        <div className="profile-header flex flex-col items-center mb-6">
           <Image
             src="/profile-avatar.png"
             alt="Profil Resmi"
@@ -20,198 +119,171 @@ export default function Profile() {
             height={80}
             className="avatar-img"
           />
-          <h1>Profil</h1>
+          <h1 className="text-2xl font-semibold mt-3">Profil</h1>
         </div>
 
-        <form className="form">
-          <section>
-            <h2>Hesap Bilgileriniz</h2>
-            <label>
+        <form className="flex-grow flex flex-col" onSubmit={handleSave}>
+          {/* Hesap Bilgileri */}
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Hesap Bilgileriniz</h2>
+            <label className="block mb-4">
               Telefon Numaranız
-              <input type="text" defaultValue="05316882362" />
+              <input
+                type="text"
+                value={profile?.phoneNumber}
+                onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
-            <label>
-              Şifreniz
-              <input type="password" defaultValue="**********" />
-            </label>
-            <a href="#" className="change-pass">Şifreyi Değiştir</a>
-          </section>
-
-          <hr />
-
-          <section>
-            <h2>İş Bilgileriniz</h2>
-            <label>
+            <label className="block mb-4">
               Plakanız
-              <input type="text" defaultValue="42TC432" />
+              <input
+                type="text"
+                value={profile?.licensePlate}
+                onChange={(e) => setProfile({ ...profile, licensePlate: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
-            <label>
+            <label className="block mb-4">
               Vergi Numaranız
-              <input type="text" defaultValue="4534895739842" />
+              <input
+                type="text"
+                value={profile?.taxNumber}
+                onChange={(e) => setProfile({ ...profile, taxNumber: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
-            <label>
+            <label className="block">
               Adresiniz
-              <input type="text" defaultValue="Levent/İstanbul" />
-            </label>
-            <label>
-              İl
-              <input type="text" placeholder="İl girin" />
-            </label>
-            <label>
-              İlçe
-              <input type="text" placeholder="İlçe girin" />
+              <input
+                type="text"
+                value={profile?.address}
+                onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
           </section>
 
-          <hr />
-
-          <section>
-            <h2>Kişisel Bilgileriniz</h2>
-            <label>
-              İsminiz
-              <input type="text" defaultValue="Sude" />
+          {/* Kişisel Bilgiler */}
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Kişisel Bilgileriniz</h2>
+            <label className="block mb-4">
+              İsim
+              <input
+                type="text"
+                value={profile?.firstName}
+                onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
-            <label>
-              Soyisminiz
-              <input type="text" defaultValue="Sır" />
+            <label className="block mb-4">
+              Soyisim
+              <input
+                type="text"
+                value={profile?.lastName}
+                onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
-            <label>
-              Doğum Tarihiniz
-              <input type="date" defaultValue="2005-10-23" />
+            <label className="block">
+              Doğum Tarihi
+              <input
+                type="date"
+                value={profile?.birthDate}
+                onChange={(e) => setProfile({ ...profile, birthDate: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              />
             </label>
           </section>
 
-          <hr />
-
-          <section>
-            <h2>Araç Bilgileriniz</h2>
-            <label>
+          {/* Araç Bilgileri */}
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Araç Bilgileriniz</h2>
+            <label className="block mb-4">
               Araç Tipi
-              <select defaultValue="Panelvan" className="select">
-                <option value="Panelvan">Panelvan</option>
-                <option value="Kamyonet">Kamyonet</option>
+              <select
+                value={profile?.vehicleType}
+                onChange={(e) => setProfile({ ...profile, vehicleType: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              >
+                <option>Panelvan</option>
+                <option>Kamyonet</option>
               </select>
             </label>
-            <label>
+            <label className="block mb-4">
               Dorse Tipi
-              <select defaultValue="Frigo" className="select">
-                <option value="Frigo">Frigo</option>
-                <option value="Kapalı">Kapalı</option>
+              <select
+                value={profile?.trailerType}
+                onChange={(e) => setProfile({ ...profile, trailerType: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              >
+                <option>Frigo</option>
+                <option>Kapalı</option>
               </select>
             </label>
-            <label>
+            <label className="block mb-4">
               Zemin Tipi
-              <select defaultValue="Tahta Taban" className="select">
-                <option value="Tahta Taban">Tahta Taban</option>
-                <option value="Sac Taban">Sac Taban</option>
+              <select
+                value={profile?.floorTypes}
+                onChange={(e) => setProfile({ ...profile, floorTypes: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              >
+                <option>Tahta Taban</option>
+                <option>Sac Taban</option>
               </select>
             </label>
-            <label>
-              Maksimum Yük Miktarı
-              <select defaultValue="15" className="select">
-                {Array.from({ length: 16 }, (_, i) => 15 + i).map((n) => (
-                  <option key={n} value={n}>{n} ton</option>
+            <label className="block">
+              Maksimum Yük
+              <select
+                value={profile?.maxLoadCapacity}
+                onChange={(e) => setProfile({ ...profile, maxLoadCapacity: e.target.value })}
+                className="mt-1 w-full p-2 border rounded"
+              >
+                {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                  <option key={n}>{n} ton</option>
                 ))}
               </select>
             </label>
           </section>
 
-          <button type="submit" className="save-btn">Kaydet</button>
+          <button
+            type="submit"
+            disabled={loadingSave}
+            className="save-btn mt-auto bg-blue-700 text-white py-3 rounded-lg text-lg disabled:opacity-50"
+          >
+            {loadingSave ? 'Kaydediliyor...' : 'Kaydet'}
+          </button>
+
+          {showSuccess && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white p-6 rounded-xl">
+                <p className="mb-4">{success}</p>
+                <button
+                  onClick={() => setShowSuccess(false)}
+                  className="px-4 py-2 bg-blue-700 text-white rounded-lg"
+                >
+                  Kapat
+                </button>
+              </div>
+            </div>
+          )}
         </form>
       </main>
 
       <style jsx>{`
         .page {
           padding: 16px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-            Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
           background: #f8f8f8;
           min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-        main {
-          flex: 1;
-        }
-        .profile-header {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 24px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
         }
         .avatar-img {
           border-radius: 50%;
           border: 2px solid #1a237e;
         }
-        .profile-header h1 {
-          font-size: 24px;
-          font-weight: 600;
-          margin-top: 12px;
-        }
-        .form {
-          display: flex;
-          flex-direction: column;
-        }
-        section {
-          margin-bottom: 24px;
-        }
-        h2 {
-          font-size: 20px;
-          font-weight: 600;
-          margin-bottom: 12px;
-        }
-        label {
-          display: flex;
-          flex-direction: column;
-          font-size: 16px;
-          margin-bottom: 12px;
-          width: 100%;
-        }
-        input {
-          box-sizing: border-box;
-          width: 100%;
-          height: 48px;
-          padding: 12px;
-          font-size: 16px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          margin-top: 8px;
-          appearance: none;
-        }
-        .select {
-          box-sizing: border-box;
-          width: 100%;
-          height: 48px;
-          padding: 12px;
-          font-size: 16px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          margin-top: 8px;
-          background: white;
-          appearance: auto;
-          -webkit-appearance: menulist;
-        }
-        .change-pass {
-          font-size: 14px;
-          color: #1a237e;
-          text-decoration: none;
-          align-self: flex-end;
-        }
-        hr {
-          border: none;
-          border-top: 1px solid #ccc;
-          margin: 0 0 24px;
-        }
         .save-btn {
-          margin-top: 16px;
-          padding: 16px;
-          background: #1a237e;
-          color: white;
-          font-size: 18px;
-          border: none;
-          border-radius: 8px;
           width: 100%;
-          cursor: pointer;
+          margin-top: 24px;
         }
       `}</style>
     </div>

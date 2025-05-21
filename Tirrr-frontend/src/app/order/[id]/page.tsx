@@ -1,127 +1,130 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
-import Head from "next/head";
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Head from 'next/head';
+
+interface Order {
+  orderNumber: number;
+  name: string;
+  numberOfOrders: number;
+  content: string;
+  volume: number;
+  weight: number;
+  departureStart: string;
+  departureEnd: string;
+  departurePoint: string;
+  arrivalPoint: string;
+  priceBase: number;
+}
 
 export default function IlanDetail() {
   const { id } = useParams();
+  const router = useRouter();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // TODO: Replace with real data fetching
-  const ilan = {
-    owner: "Mustafa Hasan",
-    historyCount: 0,
-    content: "Mobilya",
-    volume: "12 bin m³",
-    weight: "20 ton",
-    startDate: "24 Mayıs",
-    endDate: "1 Haziran",
-    from: "Konya",
-    to: "İstanbul",
-    price: "15000 + KDV",
-  };
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/post/${id}`, {
+          headers: {
+            'Authorization': token || ''
+          }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setOrder(data);
+        } else {
+          setError('İlan yüklenirken bir hata oluştu.');
+        }
+      } catch (err) {
+        console.error('Fetch order error:', err);
+        setError('Sunucuya bağlanılamadı.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrder();
+  }, [id]);
+
+  if (loading) {
+    return <div className="px-6 pt-10">Yükleniyor...</div>;
+  }
+
+  if (error) {
+    return <div className="px-6 pt-10 text-red-500">{error}</div>;
+  }
+
+  if (!order) {
+    return null;
+  }
 
   return (
     <div className="page">
       <Head>
-        <title>İlan #{id} - TIRRR</title>
+        <title>İlan #{order.orderNumber} - TIRRR</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main>
-        <h1>İlan #{id}</h1>
+      <main className="px-6 py-8 bg-gray-50 min-h-screen flex flex-col">
+        <h1 className="text-2xl font-semibold text-center mb-6">İlan #{order.orderNumber}</h1>
 
-        <section className="section">
-          <h2>İlan Sahibi Bilgileri</h2>
-          <div className="owner-name">{ilan.owner}</div>
-          <div className="row">
-            <span>İşlem Geçmişi</span>
-            <span>{ilan.historyCount} Adet</span>
+        <section className="section mb-6">
+          <h2 className="text-xl font-semibold mb-2">İlan Sahibi Bilgileri</h2>
+          <div className="owner-name text-lg mb-2">{order.name}</div>
+          <div className="row flex justify-between mb-1">
+            <span>Toplam İlan:</span>
+            <span>{order.numberOfOrders} Adet</span>
           </div>
         </section>
 
-        <hr />
+        <hr className="my-4 border-gray-300" />
 
-        <section className="section">
-          <h2>İlan Bilgileri</h2>
-          <div className="row">
-            <span>İçerik</span>
-            <span>{ilan.content}</span>
+        <section className="section mb-6">
+          <h2 className="text-xl font-semibold mb-2">İlan Bilgileri</h2>
+          <div className="row flex justify-between mb-1">
+            <span>İçerik:</span>
+            <span>{order.content}</span>
           </div>
-          <div className="row">
-            <span>Hacim</span>
-            <span>{ilan.volume}</span>
+          <div className="row flex justify-between mb-1">
+            <span>Hacim:</span>
+            <span>{order.volume} ton</span>
           </div>
-          <div className="row">
-            <span>Kilo</span>
-            <span>{ilan.weight}</span>
+          <div className="row flex justify-between mb-1">
+            <span>Ağırlık:</span>
+            <span>{order.weight} m³</span>
           </div>
-          <div className="row">
-            <span>Kalkış Tarihi Aralığı</span>
-            <span>
-              {ilan.startDate} - {ilan.endDate}
-            </span>
+          <div className="row flex justify-between mb-1">
+            <span>Kalkış Tarihi Aralığı:</span>
+            <span>{order.departureStart} - {order.departureEnd}</span>
           </div>
-          <div className="row">
-            <span>Kalkış Noktası</span>
-            <span>{ilan.from}</span>
+          <div className="row flex justify-between mb-1">
+            <span>Kalkış Noktası:</span>
+            <span>{order.departurePoint}</span>
           </div>
-          <div className="row">
-            <span>Varış Noktası</span>
-            <span>{ilan.to}</span>
+          <div className="row flex justify-between mb-1">
+            <span>Varış Noktası:</span>
+            <span>{order.arrivalPoint}</span>
           </div>
-          <div className="row">
-            <span>Ücret</span>
-            <span>{ilan.price}</span>
+          <div className="row flex justify-between mb-1">
+            <span>Ücret:</span>
+            <span>{order.priceBase} + KDV</span>
           </div>
         </section>
 
-        <button className="btn">Mesaj At</button>
+        <button
+          type="button"
+          className="btn mt-auto"
+          onClick={() => router.back()}
+        >
+          Geri Dön
+        </button>
       </main>
 
       <style jsx>{`
-        .page {
-          padding: 16px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-          background: #f8f8f8;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-        main {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-        h1 {
-          font-size: 24px;
-          font-weight: 600;
-          margin-bottom: 24px;
-          text-align: center;
-        }
-        .section {
-          margin-bottom: 24px;
-        }
-        h2 {
-          font-size: 20px;
-          font-weight: 600;
-          margin-bottom: 12px;
-        }
-        .owner-name {
-          font-size: 18px;
-          margin-bottom: 12px;
-        }
-        .row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 16px;
-          margin-bottom: 8px;
-        }
-        hr {
-          border: none;
-          border-top: 1px solid #ccc;
-          margin: 0 0 24px;
-        }
         .btn {
           width: 100%;
           padding: 16px;
@@ -131,7 +134,6 @@ export default function IlanDetail() {
           border: none;
           border-radius: 8px;
           cursor: pointer;
-          margin-top: auto;
         }
       `}</style>
     </div>

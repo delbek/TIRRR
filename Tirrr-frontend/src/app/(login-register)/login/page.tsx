@@ -1,10 +1,38 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleLogin = async () => {
+    setError('');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone, password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.status) {
+        localStorage.setItem('token', `Bearer ${data.token}`);
+        router.push('/');
+      } else {
+        setError('Giriş başarısız. Lütfen telefon numaranızı ve şifrenizi kontrol edin.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+    }
+  };
 
   return (
     <div className="px-6 pt-10 pb-6">
@@ -16,6 +44,8 @@ export default function LoginPage() {
           <input
             type="text"
             placeholder="Telefon Numaranız"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="bg-transparent flex-1 outline-none text-base"
           />
         </div>
@@ -25,9 +55,12 @@ export default function LoginPage() {
           <input
             type={showPassword ? 'text' : 'password'}
             placeholder="Şifreniz"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="bg-transparent flex-1 outline-none text-base"
           />
           <button
+            type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="text-gray-500 ml-2"
           >
@@ -35,13 +68,19 @@ export default function LoginPage() {
           </button>
         </div>
 
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
         <div className="text-right">
           <Link href="/forgetpassword" className="text-sm text-[#0B1C39] font-medium">
             Şifrenizi mi Unuttunuz?
           </Link>
         </div>
 
-        <button className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg w-full">
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="bg-[#0B1C39] text-white py-3 rounded-xl font-semibold text-lg w-full"
+        >
           Giriş Yap
         </button>
       </div>
